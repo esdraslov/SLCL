@@ -1,15 +1,16 @@
 {
   "name": "Test mod",
   "description": "This is a test mod",
+  "long_description": "longer",
   "created_at": 0,
   "author": "ESDRASLOV",
   "updated_at": 0,
   "license": "MIT",
-  "extra": {
+  "links": {
     "discord": "https://discord.gg/",
     "website": "https://example.com/",
-    "source": "https://github.com/esdraslov/slcl",
-    "youCan": "probably add anything here"
+    "source": "https://github.com/esdraslov/slcl"
   },
-  "version": "v3"
+  "version": "v3",
+  "mod_type": "All Clients"
 }
