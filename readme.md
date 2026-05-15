@@ -38,9 +38,11 @@ it's just the result of a search
 #### /api/v3/mods/total /api/v3/news/posts/total and /api/v3/servers/total
 
 lists the total of mods, news posts and servers respectively
+on the official API, redirects to itself
 
 #### /api/v3/news/posts/
 
+takes these arguments: offset (integer) and limit (integer)
 lists all news posts
 
 #### /api/v3/servers

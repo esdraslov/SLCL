@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, abort
 import os
 import json
 import configparser
@@ -52,18 +52,71 @@ def listmods():
     #     }
     # }])
 
+cache = {} # caching mod data
+
 @app.route("/api/v3/mods/<mod>")
 def getmod(mod):
+    if cache.get(mod):
+        return jsonify(cache[mod])
     if os.path.exists(os.path.join(library_path, mod)):
-        with open(os.path.join(library_path, mod, "manifest.json"), "r") as manifest:
-            info = json.load(manifest)
-            info["_links"] = {
-                "self": request.url,
-                "thumbail": request.url + "/thumbnail",
-                "versions": request.url + "/versions"
-            }
-            info["id"] = mod
-            return jsonify(info)
+        try:
+            with open(os.path.join(library_path, mod, "manifest.json"), "r") as manifest:
+                info = json.load(manifest)
+                info["_links"] = {
+                    "self": request.url,
+                    "thumbail": request.url + "/thumbnail",
+                    "versions": request.url + "/versions"
+                }
+                info["id"] = mod
+                cache[mod] = info
+                return jsonify(info)
+        except:
+            abort(500, description="Missing or invalid manifest.json")
+
+    abort(404, description="mod not found")
+
+@app.route("/api/v3/mods/total")
+def totalmods():
+    total = 0
+    for ff in os.listdir(library_path):
+        if os.path.exists(os.path.join(library_path, ff, "manifest.json")):
+            total += 1
+
+    return jsonify(total)
+
+@app.route("/api/v3/mods/search")
+def searchmod():
+    mods = []
+    for folderfile in os.listdir(library_path):
+        if os.path.isdir(os.path.join(library_path, folderfile)):
+            with open(os.path.join(library_path, folderfile, "manifest.json"), "r") as manifest:
+                info = json.load(manifest)
+                info["_links"] = {
+                    "self": request.url + f"/{folderfile}",
+                    "thumbail": request.url + f"/{folderfile}/thumbnail",
+                    "versions": request.url + f"/{folderfile}/versions"
+                }
+                info["id"] = folderfile
+                mods.append(info)
+
+    shown = []
+    for mod in mods:
+        if request.args.get("q") in mod["name"]:
+            shown.append(mod)
+        elif request.args.get("q") in mod["description"]:
+            shown.append(mod)
+
+    offset = int(request.args.get("offset"))
+    limit = int(request.args.get("limit"))
+    return jsonify(shown[offset:offset+limit])
+
+@app.route("/api/v3/news/posts")
+def news():
+    if os.path.exists(os.path.join(library_path, "posts.json")):
+        with open(os.path.join(library_path, "posts.json")) as f:
+            a = json.load(f)
+            return jsonify(a)
+    abort(500, description="No posts.json file")
 
 @app.route("/api/v3/health")
 def OK():
@@ -72,3 +125,7 @@ def OK():
 @app.route("/browser")
 def browser():
     return render_template("index.html")
+
+@app.route("/browser/view")
+def browserviewmod():
+    return render_template("view.html")

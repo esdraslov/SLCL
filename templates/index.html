@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Browser</title>
+    <style>
+      span {
+        display: block;
+      }
+    </style>
   </head>
   <body>
     <div id="mods"></div>
@@ -13,8 +18,21 @@
         fetch("/api/v3/mods")
           .then((value) => value.json())
           .then((value) => {
-            for (const mod in value) {
-              modlist.innerText += `Mod: ${mod.name}\n`;
+            for (const mod of value) {
+              const modinfo = document.createElement("div");
+              modinfo.id = mod.id;
+              const mn = document.createElement("span");
+              mn.setAttribute("class", "name");
+              mn.innerText = mod.name;
+              modinfo.appendChild(mn);
+              const ma = document.createElement("span");
+              ma.innerText = mod.author;
+              ma.setAttribute("class", "author");
+              modinfo.appendChild(ma);
+              modlist.appendChild(modinfo);
+              modinfo.addEventListener("click", () => {
+                window.location.href = `/browser/view?mod=${mod.id}`;
+              });
             }
           });
       });
