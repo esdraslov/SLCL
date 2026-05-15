@@ -1,0 +1,15 @@
+{
+  "name": "Test mod",
+  "description": "This is a test mod",
+  "created_at": 0,
+  "author": "ESDRASLOV",
+  "updated_at": 0,
+  "license": "MIT",
+  "extra": {
+    "discord": "https://discord.gg/",
+    "website": "https://example.com/",
+    "source": "https://github.com/esdraslov/slcl",
+    "youCan": "probably add anything here"
+  },
+  "version": "v3"
+}

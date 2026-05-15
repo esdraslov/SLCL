@@ -23,3 +23,7 @@ def listmods():
             "versions": "https://example.com" # link to versions download
         }
     }])
+
+@app.route("/api/v3/health")
+def OK():
+    return "OK"
